@@ -185,19 +185,22 @@ class MainRouter:
         match data.request:
             case '0':
                 cursor.execute(f"""SELECT * FROM rooms;""")
+                res = cursor.fetchall()
             case '1':
                 cursor.execute(f"""SELECT * FROM room_types;""")
+                res = cursor.fetchall()
             case '2':
                 cursor.execute(f"""SELECT * FROM customers;""")
+                res = cursor.fetchall()
             case '3':
                 cursor.execute(f"""SELECT * FROM reservations;""")
+                res = cursor.fetchall()
             case _:
                 try:
                     cursor.execute(data.request)
+                    res = cursor.fetchall()
                 finally:
-                    pass
-        res = cursor.fetchall()
-        cursor.close()
+                    cursor.close()
         return res
 
 
