@@ -3,6 +3,7 @@ import random
 import string
 
 from fastapi import FastAPI, APIRouter
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from psycopg import Connection, connect
 
@@ -207,6 +208,14 @@ class MainRouter:
 
 
 app = FastAPI()
+origins = ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 connection_data = get_envs()
 update_availability(connection_data)
 connstring = "host=" + connection_data[0] + " port=" + connection_data[1] + " dbname=" + connection_data[2] + " connect_timeout=10 user=" + connection_data[3] + " password=" + connection_data[4]
