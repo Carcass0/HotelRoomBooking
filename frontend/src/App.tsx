@@ -1,25 +1,41 @@
-import React from 'react';
-import logo from './logo.svg';
+import { useState } from 'react';
 import './App.css';
+import Typography from '@mui/material/Typography';
+import Box from "@mui/material/Box"
+import Slider from '@mui/material/Slider';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
 function App() {
+  const [capacity, setCapacity] = useState<number>(1);
+  const marks = [
+    {
+      value: 1,
+      label: '1',
+    },
+    {
+      value: 2,
+      label: '2',
+    },
+    {
+      value: 3,
+      label: '3',
+    },
+  ];
+
+  function handleCapacity(event: Event, newValue: number | number[]) {
+    setCapacity(newValue as number);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Box>
+       <Typography sx={{textAlign: 'center'}} variant="h2" gutterBottom color='black'>
+          Hotel-project
+        </Typography>
+        <Box className='sliders'>
+          <Slider value={capacity} onChange={handleCapacity} step={1} min={1} max={3} marks={marks} />
+        </Box>
+    </Box>
   );
 }
 
