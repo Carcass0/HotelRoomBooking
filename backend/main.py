@@ -4,7 +4,6 @@ import string
 
 from fastapi import FastAPI, APIRouter
 from pydantic import BaseModel
-from fastapi.middleware.cors import CORSMiddleware
 from psycopg import Connection, connect
 
 from utils import get_envs, debinarify_amenities, binarify_amenities, numerify_beds, denumerify_beds, current_date, get_end_of_stay_date
@@ -29,7 +28,7 @@ class FilterRequest(BaseModel):
     name: str
     capacity: int
     amenities: list[str]
-    beds: list[str]
+    beds: str
     stars: int
     stay_duration: int
 
@@ -76,9 +75,11 @@ class MainRouter:
         cursor.execute("""SELECT number, name, capacity, amenities, beds, stars FROM rooms AS R JOIN room_types AS rt ON r.type=rt.id WHERE is_taken='f' ORDER BY name;""")
         response = []
         current_room = ''
+        current_count = 0
         room_numbers = []
         for row in cursor:
             if current_room == row[1]:
+                current_count += 1
                 room_numbers.append(row[0])
             else:
                 if current_room != '':
@@ -87,10 +88,12 @@ class MainRouter:
                         'capacity': capacity,
                         'amenities': amenities,
                         'beds': beds,
-                        'stars': stars}
+                        'stars': stars,
+                        'count': current_count}
                     response.append(res_dict)
                 room_numbers = []
                 current_room = row[1]
+                current_count = 1
                 room_numbers.append(row[0])
                 capacity = row[2]
                 amenities = debinarify_amenities(row[3])
@@ -108,19 +111,18 @@ class MainRouter:
             if room[1] >= filter.stay_duration:
                 available_rooms.append(room[0])
 
-        if filter.amenities != []:
+        if filter.amenities != ['*']:
             amenity_string = binarify_amenities(filter.amenities)
             room_filters.append(f"""amenities LIKE '{amenity_string}'""")
 
-        if filter.name != '':
-            room_filters.append(f"""name = E'{filter.name}'""")
+        if filter.name != '*':
+            room_filters.append(f"""name LIKE E'%{filter.name}%'""")
         
         if filter.capacity != 0:
             room_filters.append(f"""capacity>={filter.capacity}""")
         
-        if filter.beds != []:
-            bed_numbers = numerify_beds(filter.beds)
-            room_filters.append(f"""beds = '{bed_numbers}'""")
+        if filter.beds != ['*']:
+            room_filters.append(f"""beds LIKE '%{filter.beds}%'""")
         
         if filter.stars != 0:
             room_filters.append(f"""stars = {filter.stars}""")
@@ -133,9 +135,11 @@ class MainRouter:
         cursor.execute(query)
         response = []
         current_room = ''
+        current_count = 0
         room_numbers = []
         for row in cursor:
             if current_room == row[1]:
+                current_count += 1
                 room_numbers.append(row[0])
             else:
                 if current_room != '':
@@ -144,10 +148,12 @@ class MainRouter:
                         'capacity': capacity,
                         'amenities': amenities,
                         'beds': beds,
-                        'stars': stars}
+                        'stars': stars,
+                        'count': current_count}
                     response.append(res_dict)
                 room_numbers = []
                 current_room = row[1]
+                current_count = 1
                 room_numbers.append(row[0])
                 capacity = row[2]
                 amenities = debinarify_amenities(row[3])
@@ -221,14 +227,6 @@ class MainRouter:
 
 
 app = FastAPI()
-origins = ["*"]
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 connection_data = get_envs()
 update_availability(connection_data)
 connstring = "host=" + connection_data[0] + " port=" + connection_data[1] + " dbname=" + connection_data[2] + " connect_timeout=10 user=" + connection_data[3] + " password=" + connection_data[4]

@@ -61,12 +61,12 @@ def debinarify_amenities(amenities_string: str) -> list[str]:
                   amenities_list.append(amenity)
         return amenities_list
              
-def numerify_beds(bed_list: list[str]) -> int:
-    num = 0
-    num += len(bed_list) * pow(10, len(bed_list))
-    for i, bed in enumerate(reversed(bed_list)):
-         num += BED_TYPES.index(bed) * pow(10, i)
-    return num
+# def numerify_beds(bed_list: list[str]) -> str:
+#     num = 0
+#     for i, bed in enumerate(reversed(bed_list)):
+#          num += BED_TYPES.index(bed) * pow(10, i)
+#     num = '%' + str(num) + '%'
+#     return num
 
 def denumerify_beds(bed_string: str) -> list[str]:
     bed_string = bed_string.strip()
@@ -101,5 +101,6 @@ if __name__=='__main__':
 # "С балконом",
 # "Телевизор",
 # "Wi-Fi"]))
-    # print(numerify_beds(['King Size', 'Диван']))
-    print(get_end_of_stay_date(5))
+    # print(numerify_beds(['Диван']))
+    # print(get_end_of_stay_date(5))
+    pass
