@@ -3,7 +3,6 @@ import random
 import string
 
 from fastapi import FastAPI, APIRouter
-from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from psycopg import Connection, connect
 
@@ -73,23 +72,33 @@ class MainRouter:
 
     def get_all_rooms(self):
         cursor = self.connection.cursor()
-        cursor.execute("""SELECT number, is_taken, name, capacity, amenities, beds, stars FROM rooms AS R JOIN room_types AS rt ON r.type=rt.id WHERE is_taken='f';""")
+        cursor.execute("""SELECT number, name, capacity, amenities, beds, stars FROM rooms AS R JOIN room_types AS rt ON r.type=rt.id WHERE is_taken='f' ORDER BY name;""")
         response = []
+        current_room = ''
+        current_count = 0
+        room_numbers = []
         for row in cursor:
-            print(row)
-            room_number = row[0]
-            name = row[2]
-            capacity = row[3]
-            amenities = debinarify_amenities(row[4])
-            beds = denumerify_beds(row[5])
-            stars = row[6]
-            res_dict = {'room_number': room_number,
-                        'name': name,
+            if current_room == row[1]:
+                current_count += 1
+                room_numbers.append(row[0])
+            else:
+                if current_room != '':
+                    res_dict = {'room_numbers': room_numbers,
+                        'name': current_room,
                         'capacity': capacity,
                         'amenities': amenities,
                         'beds': beds,
-                        'stars': stars}
-            response.append(res_dict)
+                        'stars': stars,
+                        'count': current_count}
+                    response.append(res_dict)
+                room_numbers = []
+                current_room = row[1]
+                current_count = 1
+                room_numbers.append(row[0])
+                capacity = row[2]
+                amenities = debinarify_amenities(row[3])
+                beds = denumerify_beds(row[4])
+                stars = row[5]
         cursor.close()
         return response
 
@@ -122,24 +131,35 @@ class MainRouter:
         query = f"""SELECT number, name, capacity, amenities, beds, stars FROM rooms AS R JOIN room_types AS rt ON r.type=rt.id WHERE number IN {tuple(available_rooms)}"""
         for room_filter in room_filters:
             query = query + " AND " + room_filter
-        query += ';'
+        query += ' ORDER BY name;'
         cursor = self.connection.cursor()
         cursor.execute(query)
         response = []
+        current_room = ''
+        current_count = 0
+        room_numbers = []
         for row in cursor:
-            room_number = row[0]
-            name = row[1]
-            capacity = row[2]
-            amenities = debinarify_amenities(row[3])
-            beds = denumerify_beds(row[4])
-            stars = row[5]
-            res_dict = {'room_number': room_number,
-                        'name': name,
+            if current_room == row[1]:
+                current_count += 1
+                room_numbers.append(row[0])
+            else:
+                if current_room != '':
+                    res_dict = {'room_numbers': room_numbers,
+                        'name': current_room,
                         'capacity': capacity,
                         'amenities': amenities,
                         'beds': beds,
-                        'stars': stars}
-            response.append(res_dict)
+                        'stars': stars,
+                        'count': current_count}
+                    response.append(res_dict)
+                room_numbers = []
+                current_room = row[1]
+                current_count = 1
+                room_numbers.append(row[0])
+                capacity = row[2]
+                amenities = debinarify_amenities(row[3])
+                beds = denumerify_beds(row[4])
+                stars = row[5]
         cursor.close()
         return response
     
@@ -208,14 +228,6 @@ class MainRouter:
 
 
 app = FastAPI()
-origins = ["*"]
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 connection_data = get_envs()
 update_availability(connection_data)
 connstring = "host=" + connection_data[0] + " port=" + connection_data[1] + " dbname=" + connection_data[2] + " connect_timeout=10 user=" + connection_data[3] + " password=" + connection_data[4]
