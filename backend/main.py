@@ -3,10 +3,11 @@ import random
 import string
 
 from fastapi import FastAPI, APIRouter
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from psycopg import Connection, connect
 
-from utils import get_envs, debinarify_amenities, binarify_amenities, numerify_beds, denumerify_beds, current_date, get_end_of_stay_date
+from utils import get_envs, debinarify_amenities, binarify_amenities, denumerify_beds, current_date, get_end_of_stay_date
 from dbutils import update_availability
 
 
@@ -111,17 +112,17 @@ class MainRouter:
             if room[1] >= filter.stay_duration:
                 available_rooms.append(room[0])
 
-        if filter.amenities != ['*']:
+        if filter.amenities != ['']:
             amenity_string = binarify_amenities(filter.amenities)
             room_filters.append(f"""amenities LIKE '{amenity_string}'""")
 
-        if filter.name != '*':
+        if filter.name != '':
             room_filters.append(f"""name LIKE E'%{filter.name}%'""")
         
         if filter.capacity != 0:
             room_filters.append(f"""capacity>={filter.capacity}""")
         
-        if filter.beds != ['*']:
+        if filter.beds != ['']:
             room_filters.append(f"""beds LIKE '%{filter.beds}%'""")
         
         if filter.stars != 0:
@@ -227,6 +228,14 @@ class MainRouter:
 
 
 app = FastAPI()
+origins = ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 connection_data = get_envs()
 update_availability(connection_data)
 connstring = "host=" + connection_data[0] + " port=" + connection_data[1] + " dbname=" + connection_data[2] + " connect_timeout=10 user=" + connection_data[3] + " password=" + connection_data[4]
