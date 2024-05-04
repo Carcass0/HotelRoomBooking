@@ -9,7 +9,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import RoomInfo from '../../components/RoomInfo/RoomInfo';
 import TextField from '@mui/material/TextField';
-import { Button, FormControlLabel, FormGroup } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Button, FormControlLabel, FormGroup } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 
 function RoomsList() {
@@ -137,8 +137,15 @@ function RoomsList() {
             <Typography variant="h5">Количество дней пребывания</Typography>
             <input type="number" name="stayDuration" style={{width: 45}} value={stayDuration} onChange={handleStayDuration}></input>
             </Box>
-            <Typography variant="h5">Особенности</Typography>
-            <FormGroup sx={{marginLeft: '10%'}}>
+            <Accordion>
+          <AccordionSummary
+            aria-controls="panel1-content"
+            id="panel1-header"
+          >
+          Особенности
+        </AccordionSummary>
+        <AccordionDetails>
+        <FormGroup sx={{marginLeft: '10%'}}>
             {
               AMENITY_TYPES.map((item, index) => {
                 return (
@@ -147,8 +154,17 @@ function RoomsList() {
             })
           }
             </FormGroup>
-            <Typography variant="h5">Тип кровати в номере</Typography>
-            <FormGroup sx={{marginLeft: '10%'}}>
+          </AccordionDetails>
+          </Accordion>            
+            <Accordion>
+          <AccordionSummary
+            aria-controls="panel1-content"
+            id="panel1-header"
+          >
+          Тип кровати
+        </AccordionSummary>
+        <AccordionDetails>
+        <FormGroup sx={{marginLeft: '10%'}}>
             {
               BED_TYPES.map((item, index) => {
                 return (
@@ -157,6 +173,8 @@ function RoomsList() {
             })
           }
             </FormGroup>
+          </AccordionDetails>
+          </Accordion>
             <Button variant="outlined" sx={{width: '25%', marginBottom: '1%'}} onClick={handleFiltersSending}>Найти</Button>
           </Box>
         </Box>
