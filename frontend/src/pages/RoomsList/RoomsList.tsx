@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import './RoomsList.css';
 import { IRoom } from '../../interfaces';
-import {MARKS, AMENITY_TYPES} from '../../consts';
+import {MARKS, AMENITY_TYPES, BED_TYPES} from '../../consts';
 import Typography from '@mui/material/Typography';
 import Box from "@mui/material/Box"
 import Slider from '@mui/material/Slider';
@@ -16,10 +16,10 @@ function RoomsList() {
   const [rooms, setRooms] = useState<IRoom[]>([])
   const [name, setName] = useState<string>('');
   const [stayDuration, setStayDuration] = useState<number>(1);
-  const [bedsNum, setBedsNum] = useState<number>(0);
   const [capacity, setCapacity] = useState<number>(0);
   const [stars, setStars] = useState<number>(0);
   const [amenities, setAmenities] = useState<string[]>([])
+  const [bedTypes, setBedTypes] = useState<number[]>([])
 
   const fetchRooms = useCallback(() => {
     fetch('http://localhost:8000/')
@@ -55,8 +55,15 @@ function RoomsList() {
     setStayDuration(nextValue)
   }
 
-  function handleBedsNum(event: Event, newValue: number | number[]) {
-    setBedsNum(newValue as number);
+  function handleBedTypesChange(isChecked: boolean, indexOfItem: number) {
+    if (isChecked) {
+      setBedTypes(bedTypes.concat([indexOfItem]))
+    } else {
+      var removedIndex = bedTypes.indexOf(indexOfItem);
+      if (removedIndex !== -1) {
+        setBedTypes(bedTypes.filter((value, index) => removedIndex!==index))
+      }
+    }
   };
 
   function handleAmenitiesChange(isChecked: boolean, item: string) {
@@ -71,15 +78,20 @@ function RoomsList() {
   };
 
   function handleFiltersSending() {
+    var bedsString = ''
+    bedTypes.sort().map((item) => {
+      bedsString += String(item)
+    })
+    console.log(bedsString)
     var filter = {
       name: name,
       capacity: capacity,
       stars: stars,
       amenities: amenities,
-      beds: [],
+      beds: bedsString,
       stay_duration: stayDuration
     }
-    console.log(filter)
+    
     fetch('http://localhost:8000/', {
       method: 'POST',
       body: JSON.stringify(filter),
@@ -124,17 +136,23 @@ function RoomsList() {
             </Box>
             <Typography variant="h5">Количество дней пребывания</Typography>
             <input type="number" name="stayDuration" style={{width: 45}} value={stayDuration} onChange={handleStayDuration}></input>
-            <Typography variant="h5">Количество кроватей</Typography>
-            <Box className='slider'>
-            <Slider className='slider' value={bedsNum} onChange={handleBedsNum} step={1} min={0} max={4} marks={MARKS} />
-            </Box>
             </Box>
             <Typography variant="h5">Особенности</Typography>
             <FormGroup sx={{marginLeft: '10%'}}>
             {
-              AMENITY_TYPES.map((item) => {
+              AMENITY_TYPES.map((item, index) => {
                 return (
                   <FormControlLabel control={<Checkbox />} key={item} label={item} onChange={(e, isChecked) => handleAmenitiesChange(isChecked, item)}/>
+                )
+            })
+          }
+            </FormGroup>
+            <Typography variant="h5">Тип кровати в номере</Typography>
+            <FormGroup sx={{marginLeft: '10%'}}>
+            {
+              BED_TYPES.map((item, index) => {
+                return (
+                  <FormControlLabel control={<Checkbox />} key={item} label={item} onChange={(e, isChecked) => handleBedTypesChange(isChecked, index)}/>
                 )
             })
           }

@@ -44,3 +44,8 @@ export const AMENITY_TYPES = [
     "Вид: Kranzler Eck",
     "Вид: Ku'damm"
 ]
+
+export const BED_TYPES = ["Полуторная",
+             "Двуспальная",
+             "King Size",
+             "Диван"]

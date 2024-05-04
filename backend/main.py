@@ -112,7 +112,7 @@ class MainRouter:
             if room[1] >= filter.stay_duration:
                 available_rooms.append(room[0])
 
-        if filter.amenities != ['']:
+        if filter.amenities != []:
             amenity_string = binarify_amenities(filter.amenities)
             room_filters.append(f"""amenities LIKE '{amenity_string}'""")
 
@@ -122,7 +122,7 @@ class MainRouter:
         if filter.capacity != 0:
             room_filters.append(f"""capacity>={filter.capacity}""")
         
-        if filter.beds != ['']:
+        if filter.beds != '':
             room_filters.append(f"""beds LIKE '%{filter.beds}%'""")
         
         if filter.stars != 0:
