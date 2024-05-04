@@ -4,5 +4,5 @@ export interface IRoom {
     amenities: []
     beds: []
     stars: number
-    room_number: number
+    room_numbers: number[]
 }

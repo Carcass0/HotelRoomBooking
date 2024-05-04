@@ -20,7 +20,8 @@ function RoomInfo(props: IProps) {
        <Typography variant="h3">{props.room.name}</Typography>
        <Box sx={{display: 'flex'}}>
         <Typography variant="h5">Звёзды: {props.room.stars}/5</Typography>
-        <Typography sx={{marginLeft: '65%' }} variant="h5">Вместимость: {props.room.capacity}</Typography>
+        <Typography sx={{marginLeft: '27%' }} variant="h5">Количество: {props.room.room_numbers.length}</Typography>
+        <Typography sx={{marginLeft: '20%' }} variant="h5">Вместимость: {props.room.capacity}</Typography>
         </Box>
        <Accordion>
         <AccordionSummary
