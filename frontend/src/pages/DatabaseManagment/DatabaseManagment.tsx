@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import './RoomList.css';
+import './DatabaseManagment.css';
 import Typography from '@mui/material/Typography';
 import Box from "@mui/material/Box"
 import Slider from '@mui/material/Slider';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 
-function DatabaseManaging() {
+function DatabaseManagment() {
   const [capacity, setCapacity] = useState<number>(1);
   const marks = [
     {
@@ -41,4 +41,4 @@ function DatabaseManaging() {
   );
 }
 
-export default DatabaseManaging;
+export default DatabaseManagment;

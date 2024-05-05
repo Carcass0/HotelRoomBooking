@@ -11,6 +11,7 @@ import RoomInfo from '../../components/RoomInfo/RoomInfo';
 import TextField from '@mui/material/TextField';
 import { Accordion, AccordionDetails, AccordionSummary, Button, FormControlLabel, FormGroup } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
+import { Link } from 'react-router-dom';
 
 function RoomsList() {
   const [rooms, setRooms] = useState<IRoom[]>([])
@@ -113,6 +114,7 @@ function RoomsList() {
        <Typography sx={{textAlign: 'center'}} variant="h2" color='black'>
           Hotel-project
         </Typography>
+        <Link to='/roomsManagement' style={{textAlign: 'center', display: 'block'}}>К управлению номерами</Link>
         <Box className='filterBox'>
           <Typography variant="h4" textAlign="center">Фильтрация номеров</Typography>
           <Box className='filterBoxContent'>
@@ -175,7 +177,7 @@ function RoomsList() {
             </FormGroup>
           </AccordionDetails>
           </Accordion>
-            <Button variant="outlined" sx={{width: '25%', marginBottom: '1%'}} onClick={handleFiltersSending}>Найти</Button>
+            <Button variant="outlined" sx={{width: '25%', marginBottom: '1%', marginTop: '1%'}} onClick={handleFiltersSending}>Найти</Button>
           </Box>
         </Box>
         <Box>
@@ -183,7 +185,7 @@ function RoomsList() {
             rooms && (
               rooms.map((item, index) => {
                 return (
-                  <RoomInfo room={item} key={index}></RoomInfo>
+                  <RoomInfo room={item} key={index} fetchRooms={fetchRooms}></RoomInfo>
                 )
             }))
           }
