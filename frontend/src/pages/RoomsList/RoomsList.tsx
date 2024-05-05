@@ -159,7 +159,7 @@ function RoomsList() {
             </FormGroup>
           </AccordionDetails>
           </Accordion>            
-            <Accordion>
+          <Accordion>
           <AccordionSummary
             aria-controls="panel1-content"
             id="panel1-header"

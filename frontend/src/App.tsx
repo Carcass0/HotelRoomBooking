@@ -14,6 +14,7 @@ function App() {
         <Route path="/pay/" element={<Payment />} />
         <Route path="/roomsManagement" element={<RoomsManagement />} />
         <Route path="/auth" element={<Auth />} />
+        <Route path="/databaseManagement" element={<DatabaseManagment />} />
       </Routes>
     </div>
   );

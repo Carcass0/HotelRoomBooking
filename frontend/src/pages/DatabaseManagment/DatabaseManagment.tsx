@@ -5,38 +5,48 @@ import Box from "@mui/material/Box"
 import Slider from '@mui/material/Slider';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import { Button } from '@mui/material';
+
+
 
 function DatabaseManagment() {
-  const [capacity, setCapacity] = useState<number>(1);
-  const marks = [
-    {
-      value: 1,
-      label: '1',
-    },
-    {
-      value: 2,
-      label: '2',
-    },
-    {
-      value: 3,
-      label: '3',
-    },
-  ];
+  const [data, setData] = useState<string>('')
 
-  
-
-  function handleCapacity(event: Event, newValue: number | number[]) {
-    setCapacity(newValue as number);
-  };
+  function getData(mode: string) {
+    var request = {
+      request: mode
+    }
+    console.log(request)
+    fetch('http://localhost:8000/db-request', {
+      method: 'POST',
+      body: JSON.stringify(request),
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+      .then((response) => response.json())
+      .then((data) => {
+          setData(data)
+        })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
 
   return (
     <Box>
        <Typography sx={{textAlign: 'center'}} variant="h2" gutterBottom color='black'>
-          Hotel-project
+          Панель администратора
         </Typography>
-        <Box className='sliders'>
-          <Slider value={capacity} onChange={handleCapacity} step={1} min={1} max={3} marks={marks} />
+        <Button variant="outlined" sx={{width: '25%', marginBottom: '1%', marginTop: '1%'}} onClick={() => getData('0')}>Показать комнаты</Button>
+        <Button variant="outlined" sx={{width: '25%', marginBottom: '1%', marginTop: '1%'}} onClick={() => getData('1')}>Показать типы комнат</Button>
+        <Button variant="outlined" sx={{width: '25%', marginBottom: '1%', marginTop: '1%'}} onClick={() => getData('2')}>Показать клиентов</Button>
+        <Button variant="outlined" sx={{width: '25%', marginBottom: '1%', marginTop: '1%'}} onClick={() => getData('3')}>Показать резервации</Button>
+        {data && (
+          <Box display='inline-block' textAlign='left'>
+          <pre>{data}</pre>
         </Box>
+        )}
     </Box>
   );
 }
