@@ -11,18 +11,29 @@ import { AccordionDetails, AccordionSummary, Button, TextField } from '@mui/mate
 
 interface IProps {
   room: IRoom,
-  fetchRooms: () => void
 }
 
 function RoomInfo(props: IProps) {
   const [customerName, setCustomerName] = useState<string>('')
   const [stayDuration, setStayDuration] = useState<number>(1)
+  const [roomNumber, setRoomNumber] = useState<number>(1)
+
+  function handleRoomNumber(e: React.ChangeEvent<HTMLInputElement>) {
+    var nextValue = Math.max(Number(0), Math.min(Number(1000), Number(e.target.value)));
+    if (!Number.isInteger(nextValue)) {
+      nextValue = Math.floor(nextValue)
+    }
+    if (nextValue === 0) {
+      nextValue = 1
+    }
+    setRoomNumber(nextValue)
+  }
 
   function handleCheckIn() {
     if (customerName) {
       var response = {
         customer_name: customerName,
-        room_number: props.room.room_numbers[0],
+        room_number: roomNumber,
         stay_duration: stayDuration
       }
       console.log(props.room.room_numbers[0])
@@ -36,7 +47,6 @@ function RoomInfo(props: IProps) {
           .then((response) => response.json())
           .then((data) => {
             if (data.status == 0) {
-              props.fetchRooms()
               window.location.href = "pay/"
             }
             })
@@ -101,6 +111,21 @@ function RoomInfo(props: IProps) {
           aria-controls="panel1-content"
           id="panel1-header"
         >
+          Доступные номера
+        </AccordionSummary>
+        <AccordionDetails>
+        {props.room.room_numbers.map((number, index) => {
+        return (
+          <Typography key={index} variant="h5">{number}</Typography>
+        )
+       })}
+        </AccordionDetails>
+      </Accordion>
+      <Accordion>
+        <AccordionSummary
+          aria-controls="panel1-content"
+          id="panel1-header"
+        >
           Заселение
         </AccordionSummary>
         <AccordionDetails>
@@ -112,6 +137,8 @@ function RoomInfo(props: IProps) {
                     sx={{width: '25%'}} inputProps={{ maxLength: 32 }}
                     value={customerName}
                     onChange={(e) => {setCustomerName(e.target.value)}}/>
+        <Typography variant="h5" sx={{margin: '1%'}}>Желаемый номер</Typography>
+        <input type="number" name="roomNumber" style={{width: 45}} value={roomNumber} onChange={handleRoomNumber}></input>
         <Typography variant="h5" sx={{margin: '1%'}}>Количество дней пребывания</Typography>
         <input type="number" name="stayDuration" style={{width: 45}} value={stayDuration} onChange={handleStayDuration}></input>
         <Button variant="outlined" sx={{width: '25%', margin: '1%'}} onClick={handleCheckIn}>Заселить</Button>

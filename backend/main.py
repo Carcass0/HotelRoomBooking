@@ -191,9 +191,9 @@ class MainRouter:
     
     def move(self, data: ClientChangingRooms):
         cursor = self.connection.cursor()
-        cursor.execute(f"""UPDATE reservations SET check_out_date='{current_date()}' WHERE room_number={data.old_number}""")
+        cursor.execute(f"""UPDATE reservations SET check_out_date='{current_date()}' WHERE room_number={data.old_number};""")
         cursor.execute(f"""UPDATE rooms SET is_taken='f' WHERE number={data.old_number};""")
-        cursor.execute(f"""SELECT id  FROM customers WHERE name = '{data.customer_name}'""")
+        cursor.execute(f"""SELECT id  FROM customers WHERE name = '{data.customer_name}';""")
         customer_id = cursor.fetchone()[0]
         cursor.execute(f"""INSERT INTO reservations VALUES (DEFAULT, {data.new_number}, '{current_date()}', '{get_end_of_stay_date(data.remaining_stay_duration)}', {customer_id});""")
         cursor.execute(f"""UPDATE rooms SET is_taken='t' WHERE number={data.new_number};""")

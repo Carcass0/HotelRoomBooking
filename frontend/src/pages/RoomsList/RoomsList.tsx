@@ -115,6 +115,7 @@ function RoomsList() {
           Hotel-project
         </Typography>
         <Link to='/roomsManagement' style={{textAlign: 'center', display: 'block'}}>К управлению номерами</Link>
+        <Link to='/auth' style={{textAlign: 'center', display: 'block'}}>Панель администратора</Link>
         <Box className='filterBox'>
           <Typography variant="h4" textAlign="center">Фильтрация номеров</Typography>
           <Box className='filterBoxContent'>
@@ -185,7 +186,7 @@ function RoomsList() {
             rooms && (
               rooms.map((item, index) => {
                 return (
-                  <RoomInfo room={item} key={index} fetchRooms={fetchRooms}></RoomInfo>
+                  <RoomInfo room={item} key={index}></RoomInfo>
                 )
             }))
           }
