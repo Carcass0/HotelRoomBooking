@@ -166,13 +166,13 @@ class MainRouter:
     def move_in(self, data: ClientMovingIn):
         cursor = self.connection.cursor()
         try:
-            cursor.execute(f"""INSERT INTO customers VALUES (DEFAULT, '{data.customer_name}')""")
+            cursor.execute(f"""INSERT INTO customers VALUES (DEFAULT, '{data.customer_name}');""")
         finally:
             pass
-        cursor.execute(f"""SELECT id  FROM customers WHERE name = '{data.customer_name}'""")
+        cursor.execute(f"""SELECT id  FROM customers WHERE name = '{data.customer_name}';""")
         customer_id = cursor.fetchone()[0]
         cursor.execute(f"""INSERT INTO reservations VALUES (DEFAULT, {data.room_number}, '{current_date()}', '{get_end_of_stay_date(data.stay_duration)}', {customer_id});""")
-        cursor.execute(f"""UPDATE_TABLE rooms SET is_taken='t' WHERE number={data.room_number};""")
+        cursor.execute(f"""UPDATE rooms SET is_taken='t' WHERE number={data.room_number};""")
         connection.commit()
         cursor.close()
         print(KeycardHandler.generate_code())
