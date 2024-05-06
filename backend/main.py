@@ -203,7 +203,7 @@ class MainRouter:
 
     def accident(self, data:AccidentData):
         with open('accidents.txt', 'a') as file:
-            file.write(f"""{data.room_number}#{data.description}""")
+            file.write(f"""{data.room_number}#{data.description}\n""")
         return {'status': 0}
     
     def dbrequest(self, data:DirectDBRequest):
